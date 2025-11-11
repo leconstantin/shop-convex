@@ -22,57 +22,68 @@ import { Separator } from "@/components/ui/separator";
 import { useConvexAuth, useQuery } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "@/convex/_generated/api";
+import Link from "next/link";
+import { Route } from "next";
 
 const adminLinks = [
   {
     label: "Profile",
     icon: User,
+    link: "/about",
   },
   {
     label: "My Purchases",
     icon: BanknoteIcon,
+    link: "/orders",
   },
   {
     label: "Dashboard",
     icon: LayoutDashboardIcon,
+    link: "/admin",
   },
   {
     label: "Saved",
     icon: BookmarkIcon,
+    link: "/",
   },
   {
-    label: "Updates",
+    label: "Activity",
     icon: BellIcon,
+    link: "/activity",
   },
   {
     label: "Help Center",
     icon: CircleQuestionMarkIcon,
+    link: "/",
   },
   {
     label: "Settings",
     icon: SettingsIcon,
+    link: "/settings",
   },
 ];
 const userLinks = [
   {
     label: "Profile",
     icon: User,
+    link: "/",
   },
   {
     label: "My Purchases",
     icon: BanknoteIcon,
+    link: "/orders",
   },
   {
     label: "Saved",
     icon: BookmarkIcon,
+
+    link: "/",
   },
-  {
-    label: "Updates",
-    icon: BellIcon,
-  },
+
   {
     label: "Help Center",
     icon: CircleQuestionMarkIcon,
+    link: "/",
   },
 ];
 export default function UserPopover() {
@@ -114,13 +125,14 @@ export default function UserPopover() {
           {links.map((link) => {
             const Icon = link.icon;
             return (
-              <div
+              <Link
+                href={link.link as Route}
                 className="flex cursor-pointer items-center gap-2 rounded-lg p-1.5 text-sm hover:bg-muted"
                 key={link.label}
               >
                 <Icon className="size-4 text-muted-foreground" />
                 <span>{link.label}</span>
-              </div>
+              </Link>
             );
           })}
         </div>
