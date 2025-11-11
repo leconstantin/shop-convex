@@ -1,3 +1,4 @@
+"use client";
 import { api } from "@/convex/_generated/api";
 import { useQuery, useMutation } from "convex/react";
 import { useState } from "react";
@@ -70,15 +71,6 @@ export function ProductCatalog() {
 
   return (
     <div className="space-y-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Product Catalog
-        </h1>
-        <p className="text-gray-600">
-          Browse and order products from our store
-        </p>
-      </div>
-
       {products.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-gray-400 mb-4">

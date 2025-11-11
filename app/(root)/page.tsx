@@ -1,18 +1,15 @@
-"use client";
 import { ProductCatalog } from "@/components/custom/product-list";
+import { HomeCarousel } from "@/features/web/home-carousel";
+import { ThreeItemGrid } from "@/features/web/three-item-grids";
 
 export default function HomePage() {
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Welcome to Shopa
-        </h1>
-        <p className="text-xl text-gray-600">
-          Browse our products and place your orders
-        </p>
+    <>
+      <ThreeItemGrid />
+      <HomeCarousel />
+      <div className="max-w-7xl mx-auto">
+        <ProductCatalog />
       </div>
-      <ProductCatalog />
-    </div>
+    </>
   );
 }

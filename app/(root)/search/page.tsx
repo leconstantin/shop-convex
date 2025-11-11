@@ -1,4 +1,3 @@
-"use client";
 import { ProductCatalog } from "@/components/custom/product-list";
 
 export default function Shoppage() {

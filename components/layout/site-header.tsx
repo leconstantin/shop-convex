@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CartModal } from "../cart/modal";
 import AuthBtn from "./auth-btn";
+import CartBtn from "./cart-btn";
 
 const { SITE_NAME } = process.env;
 
@@ -57,6 +58,7 @@ export async function SiteHeader() {
           </Suspense>
         </div>
         <div className="flex items-center gap-4 justify-end md:w-1/3">
+          <CartBtn />
           <CartModal />
           <AuthBtn />
         </div>

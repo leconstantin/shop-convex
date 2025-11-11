@@ -74,10 +74,6 @@ const userLinks = [
     label: "Help Center",
     icon: CircleQuestionMarkIcon,
   },
-  {
-    label: "Settings",
-    icon: SettingsIcon,
-  },
 ];
 export default function UserPopover() {
   const { isAuthenticated } = useConvexAuth();
