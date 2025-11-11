@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import Price from "@/components/custom/price";
 
 type Address = {
-  city: string | undefined;
-  state: string | undefined;
-  zip: string | undefined;
+  city: string;
+  state: string;
+  road: string;
   country?: string;
 };
 type Shipping = {
@@ -30,7 +30,7 @@ export default function ContactShipSummary({
   onChangeShipping,
   onChangeMehod,
 }: Props) {
-  const formattedAddress = `${address.city}, ${address.state} ${address.zip}${
+  const formattedAddress = `${address.city}, ${address.state} ${address.road}${
     address.country ? `, ${address.country}` : ""
   }`;
 

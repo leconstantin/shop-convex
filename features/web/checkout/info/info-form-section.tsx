@@ -9,10 +9,15 @@ export default async function CheckoutInfoFormSection() {
     {},
     { token: await convexAuthNextjsToken() },
   );
+  const checkoutSession = await preloadQuery(
+    api.checkout.getSession,
+    {},
+    { token: await convexAuthNextjsToken() },
+  );
   return (
     <div className="border-t px-4 py-6 md:border-t-0 md:border-r md:p-9 dark:border-[#333333]">
       <BreadCrumbCheckout />
-      <InfoForm preloadedUser={user} />
+      <InfoForm preloadedSesion={checkoutSession} preloadedUser={user} />
     </div>
   );
 }

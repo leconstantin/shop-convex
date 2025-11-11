@@ -9,28 +9,31 @@ import ContactShipSummary from "../contact-ship-summary";
 import { PaymentForm } from "./payment-form";
 
 export default function CheckoutPaymentSection(props: {
-  preloadedUser: Preloaded<typeof api.auth.loggedInUser>;
+  preloadedSesion: Preloaded<typeof api.checkout.getSession>;
 }) {
   const router = useRouter();
-  // const { shipping } = useShoppingCart();
-  const user = usePreloadedQuery(props.preloadedUser);
+  const session = usePreloadedQuery(props.preloadedSesion);
+  if (session === undefined) {
+    return;
+  }
+  const shipping = session?.shipping_address;
   return (
     <div className="border-t px-4 py-6 md:border-t-0 md:border-r md:p-9 dark:border-[#333333]">
       <BreadCrumbCheckout />
       <ContactShipSummary
         address={{
-          city: user?.city,
-          state: user?.apartment,
-          zip: user?.road_number,
-          country: user?.country,
+          city: shipping?.city ?? "",
+          state: shipping?.city ?? "",
+          road: shipping?.road_number ?? "",
+          country: shipping?.country ?? "",
         }}
         email="icon69184@gmail.com"
         onChangeContact={() => router.push("/checkout/information")}
         onChangeMehod={() => router.push("/checkout/shipping")}
         onChangeShipping={() => router.push("/checkout/information")}
         shipping={{
-          type: user?.shipping_method ?? "",
-          amount: user?.shipping_price ?? 0,
+          type: session?.shipping_method ?? "",
+          amount: session?.shipping_price ?? 0,
         }}
       />
       <section className="flex flex-col gap-6">

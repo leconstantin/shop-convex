@@ -18,7 +18,7 @@ type TshippingOptions = {
   price: number;
 };
 export default function ShipPrice() {
-  const user = useQuery(api.auth.loggedInUser);
+  const session = useQuery(api.checkout.getSession);
   const router = useRouter();
   const saveShipping = useMutation(api.checkout.selectShippingMethod);
   const shippingOptions: TshippingOptions[] = useMemo(
@@ -43,13 +43,13 @@ export default function ShipPrice() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (user === undefined) return;
+    if (session === undefined) return;
     if (selectedOption === null) {
       setSelectedOption(
-        user?.shipping_method ?? shippingOptions[0]?.id ?? null,
+        session?.shipping_method ?? shippingOptions[0]?.id ?? null,
       );
     }
-  }, [user, selectedOption, shippingOptions]);
+  }, [session, selectedOption, shippingOptions]);
 
   const handleContinue = async () => {
     if (!selectedOption) {

@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function CheckOutShippingPage() {
-  const user = await preloadQuery(
-    api.auth.loggedInUser,
+  const checkoutSession = await preloadQuery(
+    api.checkout.getSession,
     {},
     { token: await convexAuthNextjsToken() },
   );
@@ -21,7 +21,7 @@ export default async function CheckOutShippingPage() {
     <div className="relative mx-auto w-full max-w-[1536px] px-0 py-4 md:px-4">
       <div className="relative mx-auto grid max-w-2xl grid-cols-1 rounded-lg border border-neutral-200 bg-white lg:max-w-7xl lg:grid-cols-2 dark:border-neutral-800 dark:bg-black">
         <CheckoutCartItemsMobile />
-        <CheckoutShippingFormSection preloadedUser={user} />
+        <CheckoutShippingFormSection preloadedSesion={checkoutSession} />
         <CheckoutCartItems />
       </div>
     </div>

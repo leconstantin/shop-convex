@@ -12,11 +12,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -31,12 +31,20 @@ export function PaymentForm() {
   const router = useRouter();
   const payWithPhone = useMutation(api.checkout.paywithPhoneNumber);
   const [isSaving, setIsSaving] = useState(false);
+  const session = useQuery(api.checkout.getSession);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       phone: "",
     },
   });
+
+  useEffect(() => {
+    if (session === undefined) return;
+    form.reset({
+      phone: session?.contactPhone || "",
+    });
+  }, [session, form]);
 
   // 2. Define a submit handler.
   async function onSubmit(data: z.infer<typeof formSchema>) {

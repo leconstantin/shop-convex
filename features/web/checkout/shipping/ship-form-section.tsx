@@ -7,21 +7,25 @@ import { Preloaded, usePreloadedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export default function CheckoutShippingFormSection(props: {
-  preloadedUser: Preloaded<typeof api.auth.loggedInUser>;
+  preloadedSesion: Preloaded<typeof api.checkout.getSession>;
 }) {
   const router = useRouter();
-  const user = usePreloadedQuery(props.preloadedUser);
+  const session = usePreloadedQuery(props.preloadedSesion);
+  if (session === undefined) {
+    return;
+  }
+  const shipping = session?.shipping_address;
   return (
     <div className="border-t px-4 py-6 md:border-t-0 md:border-r md:p-9 dark:border-[#333333]">
       <BreadCrumbCheckout />
       <ContactShipSummary
         address={{
-          city: user?.city,
-          state: user?.apartment,
-          zip: user?.road_number,
-          country: user?.country,
+          city: shipping?.city ?? "",
+          state: shipping?.city ?? "",
+          road: shipping?.road_number ?? "",
+          country: shipping?.country ?? "",
         }}
-        email={user?.email ?? ""}
+        email={session?.contactEmail ?? ""}
         onChangeContact={() => router.push("/checkout/information")}
         onChangeShipping={() => router.push("/checkout/information")}
       />

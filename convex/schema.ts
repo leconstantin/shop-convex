@@ -38,16 +38,40 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_user_and_product", ["userId", "productId"]),
 
+  checkoutSessions: defineTable({
+    userId: v.id("users"),
+    contactEmail: v.optional(v.string()),
+    contactPhone: v.optional(v.string()),
+    receive_updates: v.optional(v.boolean()),
+    save_info: v.optional(v.boolean()),
+    shipping_address: v.optional(
+      v.object({
+        country: v.optional(v.string()),
+        first_name: v.optional(v.string()),
+        last_name: v.optional(v.string()),
+        email: v.optional(v.string()),
+        apartment: v.optional(v.string()),
+        city: v.optional(v.string()),
+        state: v.optional(v.string()),
+        road_number: v.optional(v.string()),
+      }),
+    ),
+    shipping_method: v.optional(v.string()),
+    shipping_price: v.optional(v.number()),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]),
+
   orders: defineTable({
     productId: v.id("products"),
     storeId: v.id("stores"),
     customerId: v.optional(v.id("users")),
+    customerPhone: v.string(),
     customerName: v.string(),
     customerEmail: v.string(),
-    customerPhone: v.string(),
     quantity: v.number(),
     totalAmount: v.number(),
     status: v.union(
+      v.literal("sent"),
       v.literal("pending"),
       v.literal("confirmed"),
       v.literal("cancelled"),
@@ -92,17 +116,6 @@ export default defineSchema({
     // other "users" fields...
 
     // InfoForm shipping address fields
-    country: v.optional(v.string()),
-    first_name: v.optional(v.string()),
-    last_name: v.optional(v.string()),
-    apartment: v.optional(v.string()),
-    city: v.optional(v.string()),
-    state: v.optional(v.string()),
-    road_number: v.optional(v.string()),
-    save_info: v.optional(v.boolean()),
-    receive_updates: v.optional(v.boolean()),
-    shipping_method: v.optional(v.string()),
-    shipping_price: v.optional(v.number()),
   }).index("email", ["email"]),
   ...applicationTables,
 });

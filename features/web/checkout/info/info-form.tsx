@@ -26,7 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
+import {
+  Preloaded,
+  useMutation,
+  usePreloadedQuery,
+  useQuery,
+} from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 const formSchema = z.object({
@@ -45,9 +50,11 @@ const formSchema = z.object({
 });
 
 export function InfoForm(props: {
+  preloadedSesion: Preloaded<typeof api.checkout.getSession>;
   preloadedUser: Preloaded<typeof api.auth.loggedInUser>;
 }) {
   const user = usePreloadedQuery(props.preloadedUser);
+  const session = usePreloadedQuery(props.preloadedSesion);
   const router = useRouter();
   const saveCheckoutInfo = useMutation(api.checkout.saveInfo);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,19 +74,26 @@ export function InfoForm(props: {
   });
 
   useEffect(() => {
+    if (session === undefined) {
+      return;
+    }
+
+    const shipping = session?.shipping_address;
+
     form.reset({
-      email_phone: user?.email || user?.phone || "",
-      receive_updates: user?.receive_updates ?? false,
-      country: user?.country || "rwanda",
-      first_name: user?.first_name || "",
-      last_name: user?.last_name || "",
-      apartment: user?.apartment || "",
-      city: user?.city || "",
-      state: user?.state || "",
-      road_number: user?.road_number || "",
-      save_info: user?.save_info ?? false,
+      email_phone:
+        shipping?.email || session?.contactPhone || user?.email || "",
+      receive_updates: session?.receive_updates ?? false,
+      country: shipping?.country || "rwanda",
+      first_name: shipping?.first_name || "",
+      last_name: shipping?.last_name || "",
+      apartment: shipping?.apartment || "",
+      city: shipping?.city || "",
+      state: shipping?.state || "",
+      road_number: shipping?.road_number || "",
+      save_info: session?.save_info ?? false,
     });
-  }, [user, form]);
+  }, [session, form]);
 
   // 2. Define a submit handler.
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
