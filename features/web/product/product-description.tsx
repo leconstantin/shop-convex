@@ -3,6 +3,8 @@ import Prose from "./prose";
 import { VariantSelector } from "./variant-selector";
 import Price from "@/components/custom/price";
 import { AddToCart } from "@/components/cart/add-to-cart";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 
 export function ProductDescription({ product }: { product: Product }) {
   return (

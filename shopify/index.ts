@@ -39,6 +39,19 @@ const domain = process.env.SHOPIFY_STORE_DOMAIN
 const endpoint = `${domain}${SHOPIFY_GRAPHQL_API_ENDPOINT}`;
 const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ?? "";
 
+function assertShopifyConfigured() {
+  if (!domain) {
+    throw new Error(
+      "SHOPIFY_STORE_DOMAIN is not set. Add it to your environment (e.g. .env.local) as your-store.myshopify.com",
+    );
+  }
+  if (!key) {
+    throw new Error(
+      "SHOPIFY_STOREFRONT_ACCESS_TOKEN is not set. Create a Storefront API access token in Shopify and add it to your environment.",
+    );
+  }
+}
+
 type ExtractVariables<T> = T extends { variables: object }
   ? T["variables"]
   : never;
@@ -56,6 +69,7 @@ export async function shopifyFetch<T>({
   variables?: ExtractVariables<T>;
 }): Promise<{ status: number; body: T } | never> {
   try {
+    assertShopifyConfigured();
     const result = await fetch(endpoint, {
       method: "POST",
       headers: {

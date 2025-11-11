@@ -6,6 +6,7 @@ export const addToCart = mutation({
   args: {
     productId: v.id("products"),
     quantity: v.number(),
+    selectedVariant: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -34,7 +35,10 @@ export const addToCart = mutation({
       )
       .first();
 
-    if (existingCartItem) {
+    if (
+      existingCartItem &&
+      args.selectedVariant === existingCartItem.selectedVariant
+    ) {
       // Update quantity
       await ctx.db.patch(existingCartItem._id, {
         quantity: existingCartItem.quantity + args.quantity,
@@ -45,6 +49,7 @@ export const addToCart = mutation({
         userId,
         productId: args.productId,
         quantity: args.quantity,
+        selectedVariant: args.selectedVariant,
       });
     }
 

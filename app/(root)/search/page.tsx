@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Search",
   description: "Search for products in the store.",
 };
+
 export default async function SearchPage(props: {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
@@ -16,6 +17,7 @@ export default async function SearchPage(props: {
     sorting.find((item) => item.slug === sort) || defaultSort;
 
   const products = await getProducts({ sortKey, reverse, query: searchValue });
+
   const resultsText = products.length > 1 ? "results" : "result";
   return (
     <>

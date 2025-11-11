@@ -15,19 +15,25 @@ const applicationTables = {
 
   products: defineTable({
     storeId: v.id("stores"),
+    // Shopify identifiers to enable idempotent upserts
+    shopifyId: v.string(),
+    handle: v.string(),
     name: v.string(),
-    description: v.string(),
     price: v.number(),
-    imageUrl: v.string(),
-    category: v.string(),
+    imageUrls: v.array(v.string()),
+    collection: v.string(),
     inStock: v.boolean(),
     stockQuantity: v.optional(v.number()),
-  }).index("by_store", ["storeId"]),
+  })
+    .index("by_store", ["storeId"])
+    .index("by_shopifyId", ["shopifyId"])
+    .index("by_handle", ["handle"]),
 
   cart: defineTable({
     userId: v.id("users"),
     productId: v.id("products"),
     quantity: v.number(),
+    selectedVariant: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
     .index("by_user_and_product", ["userId", "productId"]),

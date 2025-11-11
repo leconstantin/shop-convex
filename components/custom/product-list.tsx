@@ -103,7 +103,7 @@ export function ProductCatalog() {
               className="bg-white rounded-lg shadow-sm border overflow-hidden"
             >
               <img
-                src={product.imageUrl}
+                src={product.imageUrls[0]}
                 alt={product.name}
                 className="w-full h-48 object-cover"
               />
@@ -124,15 +124,13 @@ export function ProductCatalog() {
                       : "Out of Stock"}
                   </span>
                 </div>
-                <p className="text-gray-600 text-sm mb-3">
-                  {product.description}
-                </p>
+                <p className="text-gray-600 text-sm mb-3">{product.handle}</p>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-2xl font-bold text-green-600">
                     ${product.price.toFixed(2)}
                   </span>
                   <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                    {product.category}
+                    {product.collection}
                   </span>
                 </div>
                 <div className="flex gap-2">
@@ -190,7 +188,7 @@ export function ProductCatalog() {
 
               <div className="mb-6">
                 <img
-                  src={selectedProduct.imageUrl}
+                  src={selectedProduct.imageUrls[0]}
                   alt={selectedProduct.name}
                   className="w-full h-32 object-cover rounded-lg mb-3"
                 />

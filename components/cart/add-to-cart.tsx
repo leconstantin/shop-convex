@@ -3,8 +3,10 @@
 import clsx from "clsx";
 import { PlusIcon } from "lucide-react";
 import type { Product, ProductVariant } from "@/shopify/types";
-// import { useProduct } from "../product/product-context";
-// import { useShoppingCart } from "./cart-context";
+import { useSearchParams } from "next/navigation";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 
 function SubmitButton({
   availableForSale,
@@ -65,32 +67,71 @@ function SubmitButton({
 }
 
 export function AddToCart({ product }: { product: Product }) {
+  const searchParams = useSearchParams();
   const { variants, availableForSale } = product;
-  // const { openCart, addCartItem } = useShoppingCart();
-  // const { state } = useProduct();
+  const addToCart = useMutation(api.cart.addToCart);
+  const loggedInUser = useQuery(api.auth.loggedInUser);
+  const dbProduct = useQuery(api.products.getProductByShopifyId, {
+    shopifyId: product.id,
+  });
 
-  // const variant = variants.find((v: ProductVariant) =>
-  //   v.selectedOptions.every(
-  //     (option) => option.value === state[option.name.toLowerCase()]
-  //   )
-  // );
+  // Get selected option values as an array (e.g. ["Black", "XS"])
+  const selectedOptions = product.options
+    .map((option) => searchParams.get(option.name.toLowerCase()))
+    .filter((v): v is string => v !== null);
+
+  // Build state object from searchParams for option lookup
+  const state = product.options.reduce<{ [key: string]: string }>(
+    (acc, option) => {
+      const value = searchParams.get(option.name.toLowerCase());
+      if (value) acc[option.name.toLowerCase()] = value;
+      return acc;
+    },
+    {},
+  );
+
+  const variant = variants.find((v: ProductVariant) =>
+    v.selectedOptions.every(
+      (option) => option.value === state[option.name.toLowerCase()],
+    ),
+  );
+
   const defaultVariantId = variants.length === 1 ? variants[0]?.id : undefined;
-  // const selectedVariantId = variant?.id || defaultVariantId;
-  // const finalVariant = variants.find((v) => v.id === selectedVariantId);
-  const handleAddToCart = () => {
-    // if (finalVariant) {
-    //   addCartItem(product, finalVariant);
-    // }
-    // openCart();
+  const selectedVariantId = variant?.id || defaultVariantId;
+  const finalVariant = variants.find((v) => v.id === selectedVariantId);
+
+  if (!dbProduct) return null;
+
+  const handleAddToCart = async () => {
+    const quantity = 1;
+    if (!loggedInUser) {
+      toast.error("Please sign in to add items to cart");
+      return;
+    }
+    try {
+      await addToCart({
+        productId: dbProduct._id,
+        quantity,
+        selectedVariant: finalVariant?.title,
+      });
+      toast.success("Added to cart!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to add to cart");
+    }
   };
 
   return (
-    <form>
+    <div>
       <SubmitButton
         availableForSale={availableForSale}
         onClick={handleAddToCart}
-        selectedVariantId={"lsjfk"}
+        selectedVariantId={selectedVariantId}
       />
-    </form>
+      {/* {selectedOptions && selectedOptions}
+      {finalVariant?.title}
+      {product.variants.map((p, i) => (
+        <p key={i}>{p.title}</p>
+      ))} */}
+    </div>
   );
 }

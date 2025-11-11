@@ -16,7 +16,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       >
         {children}
       </AppProgressProvider>
-      <Toaster position="top-center" />
+      <Toaster position="top-center" closeButton />
       <TailwindIndicator />
       {/* <Analytics /> */}
     </ThemeProvider>

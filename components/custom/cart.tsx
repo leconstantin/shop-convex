@@ -1,4 +1,5 @@
 import { api } from "@/convex/_generated/api";
+import { DEFAULT_OPTION } from "@/shopify/constants";
 import { useQuery, useMutation } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -144,7 +145,7 @@ export function Cart() {
                 >
                   <div className="flex items-center gap-4">
                     <img
-                      src={item.product?.imageUrl}
+                      src={item.product?.imageUrls[0]}
                       alt={item.product?.name}
                       className="w-20 h-20 object-cover rounded-lg"
                     />
@@ -152,9 +153,26 @@ export function Cart() {
                       <h3 className="font-semibold text-gray-900">
                         {item.product?.name}
                       </h3>
-                      <p className="text-gray-600 text-sm">
-                        {item.product?.description}
-                      </p>
+                      {item.selectedVariant !== DEFAULT_OPTION ? (
+                        <p className="text-neutral-500 text-sm dark:text-neutral-400">
+                          {item.selectedVariant}
+                        </p>
+                      ) : null}
+                      {/* <div className="flex gap-1">
+                        {item.selectedOptions
+                          ? item.selectedOptions.map((op, i) => (
+                              <p
+                                className="text-neutral-500 text-sm dark:text-neutral-400"
+                                key={i}
+                              >
+                                {op}
+                                {item.selectedOptions &&
+                                  i < item.selectedOptions.length - 1 &&
+                                  " / "}
+                              </p>
+                            ))
+                          : null}
+                      </div> */}
                       <p className="text-lg font-semibold text-green-600">
                         ${item.product?.price.toFixed(2)}
                       </p>
