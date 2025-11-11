@@ -17,13 +17,21 @@ import {
   ShopifyCollectionsOperation,
   Collection,
   ShopifyCollection,
+  ShopifyCollectionOperation,
+  ShopifyProductRecommendationsOperation,
+  ShopifyProductOperation,
 } from "./types";
 import { getMenuQuery } from "./queries/menu";
 import {
   getCollectionProductsQuery,
+  getCollectionQuery,
   getCollectionsQuery,
 } from "./queries/collection";
-import { getProductsQuery } from "./queries/product";
+import {
+  getProductQuery,
+  getProductRecommendationsQuery,
+  getProductsQuery,
+} from "./queries/product";
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN
   ? ensureStartsWith(process.env.SHOPIFY_STORE_DOMAIN, "https://")
@@ -273,4 +281,54 @@ export async function getCollections(): Promise<Collection[]> {
   ];
 
   return collections;
+}
+export async function getCollection(
+  handle: string,
+): Promise<Collection | undefined> {
+  // 'use cache';
+  // cacheTag(TAGS.collections);
+  // cacheLife('days');
+
+  const res = await shopifyFetch<ShopifyCollectionOperation>({
+    query: getCollectionQuery,
+    variables: {
+      handle,
+    },
+  });
+
+  return reshapeCollection(res.body.data.collection);
+}
+
+export async function getProduct(handle: string): Promise<Product | undefined> {
+  // "use cache";
+  // cacheTag(TAGS.products);
+  // cacheLife("days");
+
+  const res = await shopifyFetch<ShopifyProductOperation>({
+    query: getProductQuery,
+    tags: [TAGS.products],
+    variables: {
+      handle,
+    },
+  });
+
+  return reshapeProduct(res.body.data.product, false);
+}
+
+export async function getProductRecommendations(
+  productId: string,
+): Promise<Product[]> {
+  // "use cache";
+  // cacheTag(TAGS.products);
+  // cacheLife("days");
+
+  const res = await shopifyFetch<ShopifyProductRecommendationsOperation>({
+    query: getProductRecommendationsQuery,
+    tags: [TAGS.products],
+    variables: {
+      productId,
+    },
+  });
+
+  return reshapeProducts(res.body.data.productRecommendations);
 }

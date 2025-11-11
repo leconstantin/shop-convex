@@ -19,7 +19,6 @@ export default function CartBtn() {
           )}
         </Link>
       </Authenticated>
-      <Unauthenticated>""</Unauthenticated>
     </div>
   );
 }

@@ -9,7 +9,7 @@ export default function Search({ onSubmit }: { onSubmit?: () => void }) {
 
   return (
     <Form
-      action="/"
+      action="/search"
       className="relative w-full w-max-[550px] lg:w-80 xl:w-full"
       onSubmit={onSubmit}
     >
