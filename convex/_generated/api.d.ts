@@ -11,6 +11,7 @@
 import type * as activities from "../activities.js";
 import type * as auth from "../auth.js";
 import type * as cart from "../cart.js";
+import type * as checkout from "../checkout.js";
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as orders from "../orders.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   activities: typeof activities;
   auth: typeof auth;
   cart: typeof cart;
+  checkout: typeof checkout;
   http: typeof http;
   myFunctions: typeof myFunctions;
   orders: typeof orders;

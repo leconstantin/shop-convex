@@ -1,7 +1,5 @@
 "use client";
 
-import { ShoppingCartIcon } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -12,14 +10,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { TcartItem } from "@/lib/types";
+import { useQuery } from "convex/react";
+import { ShoppingCartIcon } from "lucide-react";
+import Link from "next/link";
 import Price from "../custom/price";
-import { TcartItem, TDbcart } from "@/lib/types";
 import CartItemSummary from "./cart-item";
-// import Price from "../_components/price";
-// import { useShoppingCart } from "./cart-context";
-// import CartItemSummary from "./cart-item";
 
 export type MerchandiseSearchParams = {
   [key: string]: string;

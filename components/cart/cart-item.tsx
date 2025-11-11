@@ -2,7 +2,7 @@
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { createUrl } from "@/lib/utils";
+import { cn, createUrl } from "@/lib/utils";
 import { DEFAULT_OPTION } from "@/shopify/constants";
 import type { CartItem } from "@/shopify/types";
 import { DeleteItemButton } from "./delete-item-button";
@@ -14,7 +14,13 @@ type MerchandiseSearchParams = {
   [key: string]: string;
 };
 
-export default function CartItemSummary({ item }: { item: TcartItem }) {
+export default function CartItemSummary({
+  item,
+  isSheet,
+}: {
+  item: TcartItem;
+  isSheet?: boolean;
+}) {
   const merchandiseSearchParams = {} as MerchandiseSearchParams;
 
   const merchandiseUrl = createUrl(
@@ -23,7 +29,12 @@ export default function CartItemSummary({ item }: { item: TcartItem }) {
   );
   if (!item.product) return null;
   return (
-    <li className="flex w-full flex-col border-neutral-300 border-b dark:border-neutral-700">
+    <li
+      className={cn(
+        "flex w-full flex-col border-neutral-300 border-b dark:border-neutral-700",
+        !isSheet && "border-0",
+      )}
+    >
       <div className="relative flex w-full flex-row justify-between px-1 py-4">
         <div className="-ml-1 -mt-2 absolute z-40">
           <DeleteItemButton item={item} />

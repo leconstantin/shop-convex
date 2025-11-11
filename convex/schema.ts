@@ -81,5 +81,28 @@ const applicationTables = {
 
 export default defineSchema({
   ...authTables,
+  users: defineTable({
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    isAnonymous: v.optional(v.boolean()),
+    // other "users" fields...
+
+    // InfoForm shipping address fields
+    country: v.optional(v.string()),
+    first_name: v.optional(v.string()),
+    last_name: v.optional(v.string()),
+    apartment: v.optional(v.string()),
+    city: v.optional(v.string()),
+    state: v.optional(v.string()),
+    road_number: v.optional(v.string()),
+    save_info: v.optional(v.boolean()),
+    receive_updates: v.optional(v.boolean()),
+    shipping_method: v.optional(v.string()),
+    shipping_price: v.optional(v.number()),
+  }).index("email", ["email"]),
   ...applicationTables,
 });
