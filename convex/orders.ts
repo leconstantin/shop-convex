@@ -11,10 +11,8 @@ export const createOrder = mutation({
     customerPhone: v.string(),
   },
   handler: async (ctx, args) => {
+    // Allow visitors to place orders without authentication
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Must be logged in to place an order");
-    }
 
     const product = await ctx.db.get(args.productId);
     if (!product) {
@@ -34,7 +32,7 @@ export const createOrder = mutation({
     const orderId = await ctx.db.insert("orders", {
       productId: args.productId,
       storeId: product.storeId,
-      customerId: userId,
+      customerId: userId || undefined,
       customerName: args.customerName,
       customerEmail: args.customerEmail,
       customerPhone: args.customerPhone,
@@ -74,7 +72,7 @@ export const createOrderFromCart = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Must be logged in to place an order");
+      throw new Error("Must be logged in to checkout from cart");
     }
 
     const cartItems = await ctx.db
@@ -150,6 +148,115 @@ export const getStoreOrders = query({
       .withIndex("by_store", (q) => q.eq("storeId", args.storeId))
       .order("desc")
       .collect();
+
+    // Get product details for each order
+    const ordersWithProducts = await Promise.all(
+      orders.map(async (order) => {
+        const product = await ctx.db.get(order.productId);
+        return {
+          ...order,
+          product,
+        };
+      }),
+    );
+
+    return ordersWithProducts;
+  },
+});
+
+export const getMyOrders = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+
+    const orders = await ctx.db
+      .query("orders")
+      .withIndex("by_customer", (q) => q.eq("customerId", userId))
+      .order("desc")
+      .collect();
+
+    // Get product details for each order
+    const ordersWithProducts = await Promise.all(
+      orders.map(async (order) => {
+        const product = await ctx.db.get(order.productId);
+        return {
+          ...order,
+          product,
+        };
+      }),
+    );
+
+    return ordersWithProducts;
+  },
+});
+
+// Helper function to check if user is admin
+// For simplicity, we'll check if the user's email matches an admin email
+// In production, you'd want to store this in the database or use environment variables
+const ADMIN_EMAILS = ["lcon69184@gmail.com"]; // Add your admin email here - change this to your actual admin email
+
+async function isAdmin(ctx: any, userId: string | null): Promise<boolean> {
+  if (!userId) return false;
+  const user = await ctx.db.get(userId);
+  if (!user) return false;
+
+  // Try to get email from user object (Convex Auth may store it here)
+  const userEmail = (user as any).email;
+  if (userEmail) {
+    return ADMIN_EMAILS.some(
+      (email) => userEmail.toLowerCase() === email.toLowerCase(),
+    );
+  }
+
+  // If email not in user object, try to get from sessions
+  // This is a fallback - adjust based on your Convex Auth setup
+  try {
+    const sessions = await ctx.db
+      .query("sessions")
+      .filter((q: any) => q.eq(q.field("userId"), userId))
+      .first();
+
+    if (sessions && (sessions as any).email) {
+      return ADMIN_EMAILS.some(
+        (email) =>
+          (sessions as any).email.toLowerCase() === email.toLowerCase(),
+      );
+    }
+  } catch (e) {
+    // Sessions table might not exist or have different structure
+  }
+
+  return false;
+}
+
+export const checkIsAdmin = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return false;
+    }
+    return await isAdmin(ctx, userId);
+  },
+});
+
+export const getAllOrders = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Must be logged in");
+    }
+
+    // Check if user is admin
+    if (!(await isAdmin(ctx, userId))) {
+      throw new Error("Not authorized - Admin access required");
+    }
+
+    const orders = await ctx.db.query("orders").order("desc").collect();
 
     // Get product details for each order
     const ordersWithProducts = await Promise.all(

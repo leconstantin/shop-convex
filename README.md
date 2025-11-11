@@ -1,14 +1,22 @@
-# Welcome to your Convex + Next.js + Convex Auth app
+# Shopa - E-commerce Platform
 
-This is a [Convex](https://convex.dev/) project created with [`npm create convex`](https://www.npmjs.com/package/create-convex).
+An e-commerce platform built with Convex, Next.js, and Convex Auth where visitors can browse products and place orders, and admins can manage all orders.
 
-After the initial setup (<2 minutes) you'll have a working full-stack app using:
+## Features
 
-- Convex as your backend (database, server logic)
-- [React](https://react.dev/) as your frontend (web page interactivity)
-- [Next.js](https://nextjs.org/) for optimized web hosting and page routing
-- [Tailwind](https://tailwindcss.com/) for building great looking accessible UI
-- [Convex Auth](https://labs.convex.dev/auth) for authentication
+- **Public Product Catalog**: Visitors can browse products without authentication
+- **Guest Checkout**: Visitors can place orders without creating an account
+- **Shopping Cart**: Authenticated users can add items to cart and checkout
+- **Admin Dashboard**: Admins can view and manage all orders across the platform
+- **Order Management**: Admins can confirm or cancel orders
+
+## Tech Stack
+
+- [Convex](https://convex.dev/) - Backend (database, server logic)
+- [React](https://react.dev/) - Frontend (web page interactivity)
+- [Next.js](https://nextjs.org/) - Web framework and routing
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Convex Auth](https://labs.convex.dev/auth) - Authentication
 
 ## Get started
 
@@ -33,6 +41,27 @@ To learn more about developing your project with Convex, check out:
 - The rest of [Convex docs](https://docs.convex.dev/) to learn about all Convex features.
 - [Stack](https://stack.convex.dev/) for in-depth articles on advanced topics.
 - [Convex Auth docs](https://labs.convex.dev/auth) for documentation on the Convex Auth library.
+
+## Admin Setup
+
+To set up an admin user:
+
+1. Open `convex/orders.ts`
+2. Find the `ADMIN_EMAILS` constant (around line 170)
+3. Replace `"admin@example.com"` with your actual admin email address
+4. Sign up/sign in with that email address to access the admin dashboard
+
+Example:
+```typescript
+const ADMIN_EMAILS = ["your-email@example.com"]; // Your admin email
+```
+
+## Project Structure
+
+- `/shop` - Product catalog (public, no login required)
+- `/cart` - Shopping cart (requires login)
+- `/admin` - Admin dashboard to view all orders (admin only)
+- `/` - Home page with product catalog
 
 ## Configuring other authentication methods
 

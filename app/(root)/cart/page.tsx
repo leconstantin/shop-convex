@@ -4,7 +4,7 @@ import { SignInForm } from "@/components/custom/signin-form";
 import { api } from "@/convex/_generated/api";
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 
-export default function Shoppage() {
+export default function CartPage() {
   const loggedInUser = useQuery(api.auth.loggedInUser);
 
   if (loggedInUser === undefined) {
@@ -23,10 +23,10 @@ export default function Shoppage() {
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-primary mb-4">
-              Store Manager
+              Shopping Cart
             </h1>
             <p className="text-xl text-secondary">
-              Sign in to manage your store
+              Please sign in to view your cart
             </p>
           </div>
           <SignInForm />

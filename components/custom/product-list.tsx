@@ -7,6 +7,7 @@ export function ProductCatalog() {
   const products = useQuery(api.products.getAllProducts);
   const addToCart = useMutation(api.cart.addToCart);
   const createOrder = useMutation(api.orders.createOrder);
+  const loggedInUser = useQuery(api.auth.loggedInUser);
 
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [orderForm, setOrderForm] = useState({
@@ -18,6 +19,10 @@ export function ProductCatalog() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddToCart = async (productId: string, quantity: number = 1) => {
+    if (!loggedInUser) {
+      toast.error("Please sign in to add items to cart");
+      return;
+    }
     try {
       await addToCart({ productId: productId as any, quantity });
       toast.success("Added to cart!");
@@ -139,17 +144,19 @@ export function ProductCatalog() {
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => handleAddToCart(product._id)}
-                    disabled={!product.inStock}
-                    className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Add to Cart
-                  </button>
+                  {loggedInUser && (
+                    <button
+                      onClick={() => handleAddToCart(product._id)}
+                      disabled={!product.inStock}
+                      className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Add to Cart
+                    </button>
+                  )}
                   <button
                     onClick={() => setSelectedProduct(product)}
                     disabled={!product.inStock}
-                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className={`${loggedInUser ? "flex-1" : "w-full"} bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                   >
                     Buy Now
                   </button>

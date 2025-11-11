@@ -1,34 +1,18 @@
-"use client"
-import { SignInForm } from '@/components/custom/signin-form';
-import { StoreDashboard } from '@/components/custom/store-dashboard';
-import { api } from '@/convex/_generated/api';
-import { Unauthenticated, Authenticated, useQuery } from 'convex/react';
+"use client";
+import { ProductCatalog } from "@/components/custom/product-list";
 
-export default function Dashboardpage() {
-    const loggedInUser = useQuery(api.auth.loggedInUser);
-
-    if (loggedInUser === undefined) {
-      return (
-        <div className="flex justify-center items-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      );
-    }
+export default function HomePage() {
   return (
     <div className="max-w-7xl mx-auto">
-    <Authenticated>
-   <StoreDashboard />
-  
-    </Authenticated>
-    <Unauthenticated>
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-primary mb-4">Store Manager</h1>
-          <p className="text-xl text-secondary">Sign in to manage your store</p>
-        </div>
-        <SignInForm />
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          Welcome to Shopa
+        </h1>
+        <p className="text-xl text-gray-600">
+          Browse our products and place your orders
+        </p>
       </div>
-    </Unauthenticated>
-  </div>
-  )
+      <ProductCatalog />
+    </div>
+  );
 }

@@ -1,30 +1,16 @@
 "use client";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
+import { Authenticated, Unauthenticated } from "convex/react";
+import { SignInForm } from "@/components/custom/signin-form";
 
 export default function ActivityPage() {
+  const isAdmin = useQuery(api.orders.checkIsAdmin);
   const store = useQuery(api.stores.getMyStore);
   const activities = useQuery(
     api.activities.getStoreActivities,
     store ? { storeId: store._id, limit: 100 } : "skip",
   );
-
-  if (!store) {
-    return (
-      <div className="text-center py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Activity Log</h1>
-        <p className="text-gray-600">Create a store first to see activity</p>
-      </div>
-    );
-  }
-
-  if (!activities) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -139,68 +125,105 @@ export default function ActivityPage() {
     }
   };
 
-  return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Activity Log</h1>
-        <p className="text-gray-600">Track all activities in your store</p>
+  if (isAdmin === undefined) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
+    );
+  }
 
-      {activities.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <svg
-              className="w-16 h-16 mx-auto"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1}
-                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
+  return (
+    <div className="max-w-7xl mx-auto">
+      <Authenticated>
+        {!isAdmin ? (
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Access Denied</h1>
+            <p className="text-gray-600">This page is only accessible to administrators.</p>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No activities yet
-          </h3>
-          <p className="text-gray-600">
-            Activities will appear here as you manage your store
-          </p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow-sm border">
-          <div className="p-6 border-b">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Recent Activities
-            </h2>
+        ) : !store ? (
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Activity Log</h1>
+            <p className="text-gray-600">Create a store first to see activity</p>
           </div>
-          <div className="divide-y">
-            {activities.map((activity) => (
-              <div key={activity._id} className="p-6 flex items-start gap-4">
-                {getActivityIcon(activity.type)}
-                <div className="flex-1">
-                  <p className="text-gray-900 font-medium">
-                    {activity.description}
-                  </p>
-                  <div className="flex items-center gap-4 mt-2">
-                    <span className="text-sm text-gray-500">
-                      {new Date(activity.timestamp).toLocaleString()}
-                    </span>
-                    {activity.metadata?.amount && (
-                      <span className="text-sm font-medium text-green-600">
-                        ${activity.metadata.amount.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
+        ) : !activities ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Activity Log</h1>
+              <p className="text-gray-600">Track all activities in your store</p>
+            </div>
+
+            {activities.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-gray-400 mb-4">
+                  <svg
+                    className="w-16 h-16 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No activities yet
+                </h3>
+                <p className="text-gray-600">
+                  Activities will appear here as you manage your store
+                </p>
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm border">
+                <div className="p-6 border-b">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Recent Activities
+                  </h2>
+                </div>
+                <div className="divide-y">
+                  {activities.map((activity) => (
+                    <div key={activity._id} className="p-6 flex items-start gap-4">
+                      {getActivityIcon(activity.type)}
+                      <div className="flex-1">
+                        <p className="text-gray-900 font-medium">
+                          {activity.description}
+                        </p>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-sm text-gray-500">
+                            {new Date(activity.timestamp).toLocaleString()}
+                          </span>
+                          {activity.metadata?.amount && (
+                            <span className="text-sm font-medium text-green-600">
+                              ${activity.metadata.amount.toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
           </div>
+        )}
+      </Authenticated>
+      <Unauthenticated>
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-primary mb-4">Admin Access</h1>
+            <p className="text-xl text-secondary">Sign in to access this page</p>
+          </div>
+          <SignInForm />
         </div>
-      )}
+      </Unauthenticated>
     </div>
   );
 }

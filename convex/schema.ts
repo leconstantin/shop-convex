@@ -35,7 +35,7 @@ const applicationTables = {
   orders: defineTable({
     productId: v.id("products"),
     storeId: v.id("stores"),
-    customerId: v.id("users"),
+    customerId: v.optional(v.id("users")),
     customerName: v.string(),
     customerEmail: v.string(),
     customerPhone: v.string(),

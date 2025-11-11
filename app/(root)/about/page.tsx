@@ -3,8 +3,11 @@ import { api } from "@/convex/_generated/api";
 import { useQuery, useMutation } from "convex/react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { Authenticated, Unauthenticated } from "convex/react";
+import { SignInForm } from "@/components/custom/signin-form";
 
 export default function AboutPage() {
+  const isAdmin = useQuery(api.orders.checkIsAdmin);
   const store = useQuery(api.stores.getMyStore);
   const updateStore = useMutation(api.stores.updateStore);
 
@@ -71,29 +74,41 @@ export default function AboutPage() {
     setIsEditing(false);
   };
 
-  if (!store) {
+  if (isAdmin === undefined) {
     return (
-      <div className="text-center py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          About Your Store
-        </h1>
-        <p className="text-gray-600">
-          Create a store first to manage its details
-        </p>
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          About Your Store
-        </h1>
-        <p className="text-gray-600">
-          Manage your store information and details
-        </p>
-      </div>
+    <div className="max-w-7xl mx-auto">
+      <Authenticated>
+        {!isAdmin ? (
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Access Denied</h1>
+            <p className="text-gray-600">This page is only accessible to administrators.</p>
+          </div>
+        ) : !store ? (
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              About Your Store
+            </h1>
+            <p className="text-gray-600">
+              Create a store first to manage its details
+            </p>
+          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                About Your Store
+              </h1>
+              <p className="text-gray-600">
+                Manage your store information and details
+              </p>
+            </div>
 
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="p-6 border-b flex justify-between items-center">
@@ -288,6 +303,18 @@ export default function AboutPage() {
           )}
         </div>
       </div>
+    </div>
+        )}
+      </Authenticated>
+      <Unauthenticated>
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-primary mb-4">Admin Access</h1>
+            <p className="text-xl text-secondary">Sign in to access this page</p>
+          </div>
+          <SignInForm />
+        </div>
+      </Unauthenticated>
     </div>
   );
 }
