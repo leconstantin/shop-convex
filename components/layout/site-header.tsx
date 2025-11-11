@@ -1,74 +1,66 @@
-"use client";
-import React from "react";
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { SignOutButton } from "./sign-out";
+// import CartModal from 'components/cart/modal';
+
+import LogoSquare from "@/components/icons/logo-square";
+import MobileMenu from "@/components/layout/mobile-menu";
+import Search, { SearchSkeleton } from "@/components/layout/search";
+import { getMenu } from "@/shopify/index";
+import type { Menu } from "@/shopify/types";
+import type { Route } from "next";
 import Link from "next/link";
-export default function SiteHeader() {
-  const cart = useQuery(api.cart.getMyCart);
-  const isAdmin = useQuery(api.orders.checkIsAdmin);
-  const cartItemCount =
-    cart?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+import { Suspense } from "react";
+import { CartModal } from "../cart/modal";
+import AuthBtn from "./auth-btn";
+
+const { SITE_NAME } = process.env;
+
+export async function SiteHeader() {
+  const menu = await getMenu("frontend-header-menu");
+
   return (
-    <header className="sticky top-0 z-10  backdrop-blur-sm h-16 flex justify-between items-center border-b shadow-sm px-4">
-      <div className="flex items-center gap-4">
-        <Link
-          href="/"
-          className="text-xl font-semibold text-primary hover:underline"
-        >
-          Shopa
-        </Link>
-        <nav className="flex gap-4">
-          <Link href="/shop" className="hover:underline">
-            Shop
-          </Link>
-          <Authenticated>
-            {isAdmin ? (
-              <>
-                <Link href="/admin" className="hover:underline">
-                  Admin
-                </Link>
-                <Link href="/about" className="hover:underline">
-                  About
-                </Link>
-                <Link href="/settings" className="hover:underline">
-                  Settings
-                </Link>
-                <Link href="/activity" className="hover:underline">
-                  Activity
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/cart" className="relative hover:underline">
-                  Cart
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
-                <Link href="/orders" className="hover:underline">
-                  My Orders
-                </Link>
-              </>
-            )}
-          </Authenticated>
-        </nav>
+    <nav className="relative flex items-center justify-between p-4 lg:px-6">
+      <div className="block flex-none md:hidden">
+        <Suspense fallback={null}>
+          <MobileMenu menu={menu} />
+        </Suspense>
       </div>
-      <div className="flex items-center gap-4">
-        <Authenticated>
-          <SignOutButton />
-        </Authenticated>
-        <Unauthenticated>
+      <div className="flex w-full items-center">
+        <div className="flex w-full md:w-1/3">
           <Link
-            href="/signin"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
+            href="/"
+            prefetch={true}
           >
-            Sign In
+            <LogoSquare />
+            <div className="ml-2 flex-none font-medium text-sm uppercase md:hidden lg:block">
+              {SITE_NAME}
+            </div>
           </Link>
-        </Unauthenticated>
+          {menu.length ? (
+            <ul className="hidden gap-6 text-sm md:flex md:items-center">
+              {menu.map((item: Menu) => (
+                <li key={item.title}>
+                  <Link
+                    className="text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
+                    href={item.path as Route}
+                    prefetch={true}
+                  >
+                    {item.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+        <div className="hidden justify-center md:flex md:w-1/3">
+          <Suspense fallback={<SearchSkeleton />}>
+            <Search />
+          </Suspense>
+        </div>
+        <div className="flex items-center gap-4 justify-end md:w-1/3">
+          <CartModal />
+          <AuthBtn />
+        </div>
       </div>
-    </header>
+    </nav>
   );
 }

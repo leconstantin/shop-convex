@@ -1,15 +1,14 @@
-import SiteHeader from "@/components/layout/site-header";
-import { Toaster } from "sonner";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
 
 export default function AppLayout(props: LayoutProps<"/">) {
   return (
     <div className="relative z-10 flex min-h-svh flex-col bg-background">
       <SiteHeader />
-      <main className="container-wrapper py-10 flex min-h-screen flex-1 flex-col bg-muted/10 lg:px-3">
+      <main className="relative flex min-h-svh flex-1 flex-col items-center justify-center bg-muted selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         {props.children}
       </main>
-      {/* <SiteFooter /> */}
-      <Toaster />
+      <SiteFooter />
     </div>
   );
 }
